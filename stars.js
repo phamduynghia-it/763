@@ -76,10 +76,37 @@ document.addEventListener("DOMContentLoaded", () => {
         text.textContent = nextMessage;
         // text.style.setProperty("--gradient-color", getRandomGradient());
 
-        text.style.left = `${x}px`;
-        text.style.top = `${y}px`;
+        // Ước tính kích thước text (font-size 40px trên desktop, 28px trên mobile)
+        const isMobile = window.innerWidth < 768;
+        const fontSize = isMobile ? 28 : 40;
+        const estimatedTextWidth = Math.min(nextMessage.length * (fontSize * 0.6), window.innerWidth * 0.85);
+        const estimatedTextHeight = fontSize * 1.5; // ước tính chiều cao
+        
+        // Giới hạn vị trí để text luôn nằm trong viewport
+        const padding = 20;
+        const maxX = window.innerWidth - estimatedTextWidth - padding;
+        const maxY = window.innerHeight - estimatedTextHeight - padding;
+        
+        // Điều chỉnh vị trí nếu vượt quá viewport
+        const safeX = Math.max(padding, Math.min(x, maxX));
+        const safeY = Math.max(padding, Math.min(y, maxY));
+
+        text.style.left = `${safeX}px`;
+        text.style.top = `${safeY}px`;
 
         document.body.appendChild(text);
+        
+        // Sau khi thêm vào DOM, điều chỉnh lại vị trí nếu cần
+        setTimeout(() => {
+            const rect = text.getBoundingClientRect();
+            const adjustedX = Math.max(padding, Math.min(safeX, window.innerWidth - rect.width - padding));
+            const adjustedY = Math.max(padding, Math.min(safeY, window.innerHeight - rect.height - padding));
+            
+            if (adjustedX !== safeX || adjustedY !== safeY) {
+                text.style.left = `${adjustedX}px`;
+                text.style.top = `${adjustedY}px`;
+            }
+        }, 0);
 
         for (let i = 0; i < 8; i++) {
             const offsetX = (Math.random() - 0.5) * 50;
@@ -96,8 +123,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Tự động tạo text sau mỗi khoảng thời gian
     function createAutoText() {
-        const x = Math.random() * (window.innerWidth - 200) + 100;
-        const y = Math.random() * (window.innerHeight - 200) + 100;
+        // Đảm bảo text xuất hiện trong viewport, đặc biệt trên điện thoại
+        const padding = 30;
+        const estimatedTextWidth = 200;
+        const estimatedTextHeight = 60;
+        
+        // Tính toán vùng an toàn trong viewport
+        const maxX = window.innerWidth - estimatedTextWidth - padding;
+        const maxY = window.innerHeight - estimatedTextHeight - padding;
+        
+        // Vị trí ngẫu nhiên nhưng đảm bảo trong viewport
+        const x = Math.random() * (maxX - padding) + padding;
+        const y = Math.random() * (maxY - padding) + padding;
+        
         createTextAndPetals(x, y);
     }
 
