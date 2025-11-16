@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Mảng các câu nói
     const messages = [
+        
+"HAPPY BIRTHDAY 夫",
       " 夫に会えて良かったです.",
 "過去の時間ずっと一番好きだった人だよ。",
 "夫の笑ってる顔がすごい好き、だから笑っててね。",
